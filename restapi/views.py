@@ -32,18 +32,27 @@ from restapi.custom_exception import *
 
 
 
-def index(_request):
+def index(_request)->HttpResponse:
+    ''' 
+        Returns Hello,world. You're at Rest Statement 
+    '''
     return HttpResponse("Hello, world. You're at Rest.")
 
 
 @api_view(['POST'])
-def logout(request):
+def logout(request) -> Response:
+    ''' 
+        Deletes Authetication Token 
+    '''
     request.user.auth_token.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(['GET'])
-def balance(request):
+def balance(request) -> Response:
+    '''
+        Used to get final balances
+    '''
     user = request.user
     expenses = Expenses.objects.filter(users__in=user.expenses.all())
     final_balance = {}
@@ -63,6 +72,9 @@ def balance(request):
 
 
 def normalize(expense):
+    '''
+        Normalizes Expenses
+    '''
     user_balances = expense.users.all()
     dues = {}
     for user_balance in user_balances:
@@ -86,6 +98,8 @@ def normalize(expense):
 
 
 class user_view_set(ModelViewSet):
+    '''
+        
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (AllowAny,)
@@ -108,7 +122,7 @@ class group_view_set(ModelViewSet):
             groups = groups.filter(name__icontains=self.request.query_params.get('q', None))
         return groups
 
-    def create(self, request, *args, **kwargs):
+    def create(self, request, *args, **kwargs)b -> Response:
         user = self.request.user
         data = self.request.data
         group = Groups(**data)
@@ -118,7 +132,7 @@ class group_view_set(ModelViewSet):
         return Response(serializer.data, status=201)
 
     @action(methods=['put'], detail=True)
-    def members(self, request, pk=None):
+    def members(self, request, pk=None) -> Response:
         group = Groups.objects.get(id=pk)
         if group not in self.get_queryset():
             raise UnauthorizedUserException()
@@ -135,7 +149,7 @@ class group_view_set(ModelViewSet):
         return Response(status=204)
 
     @action(methods=['get'], detail=True)
-    def expenses(self, _request, pk=None):
+    def expenses(self, _request, pk=None) -> Response:
         group = Groups.objects.get(id=pk)
         if group not in self.get_queryset():
             raise UnauthorizedUserException()
@@ -144,7 +158,7 @@ class group_view_set(ModelViewSet):
         return Response(serializer.data, status=200)
 
     @action(methods=['get'], detail=True)
-    def balances(self, _request, pk=None):
+    def balances(self, _request, pk=None) -> Response:
         group = Groups.objects.get(id=pk)
         if group not in self.get_queryset():
             raise UnauthorizedUserException()
@@ -190,7 +204,7 @@ class expenses_view_set(ModelViewSet):
 @api_view(['post'])
 @authentication_classes([])
 @permission_classes([])
-def logProcessor(request):
+def logProcessor(request) -> Response:
     data = request.data
     num_threads = data['parallelFileProcessingCount']
     log_files = data['logFiles']
