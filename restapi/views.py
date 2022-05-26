@@ -332,10 +332,12 @@ def multiThreadedReader(urls, num_threads):
     """
     logger.info("multithreadreader function initiated")
     result = []
-    for url in urls:
-        data = reader(url, 60)
-        data = data.decode('utf-8')
-        result.extend(data.split("\n"))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=num_threads) as executor:
+        futures = {executor.submit(reader, url, READER_TIMEOUT) : url for url in urls}
+        for future in concurrent.futures.as_completed(futures):
+            data = reader(url, 60)
+            data = data.decode('utf-8')
+            result.extend(data.split("\n"))
     result = sorted(result, key=lambda elem:elem[1])
     logger.info("multithreadreader function executed")
     return result
