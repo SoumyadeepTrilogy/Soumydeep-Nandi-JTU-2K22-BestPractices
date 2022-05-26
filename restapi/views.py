@@ -155,7 +155,7 @@ class GroupViewSet(ModelViewSet):
             for user_id in removed_ids:
                 group.members.remove(user_id)
         group.save()
-        logger.info("logger function executed")
+        logger.info("members function executed")
         return Response(status=204)
 
     @action(methods=['get'], detail=True)
