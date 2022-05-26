@@ -94,19 +94,19 @@ def normalize(expense):
     return balances
 
 
-class user_view_set(ModelViewSet):
+class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (AllowAny,)
 
 
-class category_view_set(ModelViewSet):
+class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     http_method_names = ['get', 'post']
 
 
-class group_view_set(ModelViewSet):
+class GroupViewSet(ModelViewSet):
     queryset = Groups.objects.all()
     serializer_class = GroupSerializer
 
@@ -207,7 +207,7 @@ class group_view_set(ModelViewSet):
         return Response(balances, status=200)
 
 
-class expenses_view_set(ModelViewSet):
+class ExpensesViewSet(ModelViewSet):
     queryset = Expenses.objects.all()
     serializer_class = ExpensesSerializer
 
