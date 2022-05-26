@@ -21,6 +21,7 @@ from rest_framework import status
 from restapi.models import Category, Groups, UserExpense, Expenses
 from restapi.serializers import UserSerializer, CategorySerializer, GroupSerializer, ExpensesSerializer
 from restapi.custom_exception import UnauthorizedUserException
+from restapi.utils import calculate_time
 
 
 
@@ -159,6 +160,7 @@ class GroupViewSet(ModelViewSet):
         return Response(status=204)
 
     @action(methods=['get'], detail=True)
+    @calculate_time
     def expenses(self, _request, pk=None) -> Response:
         '''
             Group Expenses Returned
@@ -173,6 +175,7 @@ class GroupViewSet(ModelViewSet):
         return Response(serializer.data, status=200)
 
     @action(methods=['get'], detail=True)
+    @calculate_time
     def balances(self, _request, pk=None) -> Response:
         '''
             Returns balance
@@ -223,6 +226,7 @@ class ExpensesViewSet(ModelViewSet):
 @api_view(['post'])
 @authentication_classes([])
 @permission_classes([])
+@calculate_time
 def logProcessor(request) -> Response:
     '''
         Log_files processed
@@ -320,12 +324,11 @@ def transform(logs):
     logger.info("Trasformation of log executed")
     return result
 
-
 def reader(url, timeout):
     with urllib.request.urlopen(url, timeout=timeout) as conn:
         return conn.read()
 
-
+@calculate_time
 def multiThreadedReader(urls, num_threads):
     """
         Read multiple files through HTTP
